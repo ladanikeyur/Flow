@@ -1,0 +1,70 @@
+.rectengle {
+  background-color: #3498db;
+  width: 120px;
+  height: 60px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+.conditional {
+  background-color: #e67e22;
+  width: 150px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.iteration {
+  background-color: #2ecc71;
+  width: 120px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+}
+
+.layout{
+  display: flex;
+}
+
+.inputtype{
+  border-radius: 5px;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #f7f7f7;
+  font-size: 16px;
+}
+
+.button-style{
+  background-color: blue;
+  color: white;
+  width: 100%;
+  border:none;
+  border-radius: 2px;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.inputmain{
+  margin-bottom: 10px;
+}
+
+.colorinput{
+  width: 100%;
+}
+
+.nodes{
+  margin-bottom: 10px;
+}
