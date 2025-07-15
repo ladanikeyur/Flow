@@ -2,6 +2,7 @@ import React from 'react'
 
 export default function Editnodes(props) {
     return (
+        //Create Edit node Function
         <div style={{ width: '92%' }}>
             <h2 className="text-lg font-bold mb-2">Edit Node</h2>
             <div className="inputmain">
@@ -41,6 +42,7 @@ export default function Editnodes(props) {
                     onChange={(e) => props.setPopoverData({ ...props.popoverData, width: e.target.value })}
                 />
             </div>
+            {/* using this submit button we are Edit Node data  */}
             <button className="button-style" onClick={props.handleSubmit}>
                 Submit
             </button>

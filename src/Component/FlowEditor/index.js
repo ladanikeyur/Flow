@@ -17,19 +17,23 @@ import Editnodes from "../Editnodes";
 const nodeTypes = { custom: CustomNode };
 
 const FlowEditor = () => {
+    // Create useNodesState and useEdgesState State
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState(null);
     const [editingNode, setEditingNode] = useState(null);
     const [popoverData, setPopoverData] = useState({ name: "", color: "", height: 100, width: 150 });
 
+    //connect 2 node using this function it is Store Object in addEdge 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
 
+    // Create DragOver Event and set dropEffect move
     const onDragOver = (event) => {
         event.preventDefault();
         event.dataTransfer.dropEffect = "move";
     };
 
+    // Create node Style Function and Based on type Style Return 
     const getNodeStyle = (type) => {
         switch (type) {
             case "rectangle":
@@ -72,11 +76,13 @@ const FlowEditor = () => {
         }
     };
 
+    // when Element type iteration so return Transform value Other wise return none
     const getTransform = (type) => {
         if (type === "iteration") return "skewX(-20deg)";
         return "none";
     };
 
+    //Create on Drop Function and Set Flow Element Position and Create new Node and push data in useNodesState 
     const onDrop = (event) => {
         event.preventDefault();
         const type = event.dataTransfer.getData("application/reactflow");
@@ -85,6 +91,7 @@ const FlowEditor = () => {
             x: event.clientX - bounds.left,
             y: event.clientY - bounds.top,
         });
+        //Create new nodes and set in setNodes State
         const newNode = {
             id: uuidv4(),
             type: "custom",
@@ -98,6 +105,7 @@ const FlowEditor = () => {
         setNodes((nds) => nds.concat(newNode));
     };
 
+    // Create node DoubleClick function using this function Form Show in side bar and Set form Data.
     const onNodeDoubleClick = (event, node) => {
         setEditingNode(node);
         setPopoverData({
@@ -108,14 +116,17 @@ const FlowEditor = () => {
         });
     };
 
+    // handleSubmit funtion Save Edit node Data with new Value based on uid
     const handleSubmit = () => {
         setNodes((nds) =>
+            //find the node and set new value
             nds.map((n) =>
                 n.id === editingNode.id
                     ? {
                         ...n,
                         data: {
                             ...n.data,
+                            //set new nodes Name and Style
                             label: popoverData.name,
                             style: {
                                 ...n.data.style,
@@ -128,9 +139,13 @@ const FlowEditor = () => {
                     : n
             )
         );
+
+        //Clear Edit node State value and this value is so Edit node form is hide 
         setEditingNode(null);
     };
 
+
+    // Create DrafStart function and using this Function we are Mode node in application/reactflow View
     const onDragStart = (event, nodeType) => {
         event.dataTransfer.setData("application/reactflow", nodeType);
         event.dataTransfer.effectAllowed = "move";
@@ -140,8 +155,11 @@ const FlowEditor = () => {
         <div className="">
             <div className="layout">
                 <div style={{ width: '25%', padding: '5px' }}>
+                    {/* Call sidebar and Show 3 nodes */}
                     <Sidebar onDragStart={onDragStart} />
+                    {/* when we are double Click on node so editingNode set so form is Show Other wise hide */}
                     {editingNode && (
+                        // Call the Edit form Component
                         <Editnodes handleSubmit={(val) =>{handleSubmit(val)}} popoverData={popoverData} setPopoverData={(val) =>{setPopoverData(val)}}/>
                     )}
                 </div>
@@ -152,12 +170,15 @@ const FlowEditor = () => {
                             edges={edges}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
+                            // connect 2 nodes using this Event and set Edges Data
                             onConnect={onConnect}
+                            //set ReactFlow Property in setReactFlowInstance
                             onInit={setReactFlowInstance}
                             onNodeDoubleClick={onNodeDoubleClick}
                             nodeTypes={nodeTypes}
                             fitView
                         >
+                            {/* Show Map, Controler button and background in Flow Canvas */}
                             <MiniMap />
                             <Controls />
                             <Background />

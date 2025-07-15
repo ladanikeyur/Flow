@@ -2,6 +2,7 @@ import { type } from '@testing-library/user-event/dist/type';
 import '../../App.css'
 
 const Sidebar = ({ onDragStart }) => {
+    // node Data using this Data we are Show nodes in sidebar
     const data = [
         {
             lable: "Node",
@@ -24,6 +25,7 @@ const Sidebar = ({ onDragStart }) => {
             {
                 data.map((val,i) =>{
                     return(
+                        //call onDragStart Event and Using this Event we are Add nodes in Canvas
                         <div draggable onDragStart={(e) => onDragStart(e, val.type)}
                         className="cursor-pointer nodes">
                         <div className={val.class}>{val.lable}</div>
