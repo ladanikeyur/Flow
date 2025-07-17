@@ -25,7 +25,7 @@ const FlowEditor = () => {
     const [popoverData, setPopoverData] = useState({ name: "", color: "", height: 100, width: 150 });
 
     //connect 2 node using this function it is Store Object in addEdge 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+    const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'step' }, eds)), [setEdges]);
 
     // Create DragOver Event and set dropEffect move
     const onDragOver = (event) => {
@@ -91,28 +91,126 @@ const FlowEditor = () => {
             x: event.clientX - bounds.left,
             y: event.clientY - bounds.top,
         });
-        //Create new nodes and set in setNodes State
-        const newNode = {
-            id: uuidv4(),
-            type: "custom",
-            position,
-            data: {
-                label: type.charAt(0).toUpperCase() + type.slice(1),
-                style: getNodeStyle(type),
-                transform: getTransform(type),
+        if (type !== "conditional") {
+            //Create new nodes and set in setNodes State
+            const newNode = [
+                {
+                id: uuidv4(),
+                type: "custom",
+                typeid: type,
+                position,
+                data: {
+                    label: type.charAt(0).toUpperCase() + type.slice(1),
+                    style: getNodeStyle(type),
+                    transform: getTransform(type),
+                },
             },
-        };
-        setNodes((nds) => nds.concat(newNode));
+            {
+                id: uuidv4(),
+                type: "custom",
+                typeid: "iteration",
+                position: {
+                    x: position.x + 300,
+                    y: position.y
+                },
+                data: {
+                    label: "iteration",
+                    style: getNodeStyle("iteration"),
+                    transform: getTransform("iteration"),
+                },
+            }
+        ];
+            for (let index = 0; index < newNode.length; index++) {
+                const element = newNode[index];
+                setNodes((nds) => nds.concat(element));
+            }
+
+            const conect = {
+                source: newNode[1].id,
+                sourceHandle: null,
+                target: newNode[0].id,
+                targetHandle: null,
+                type: "step",
+                id: `reactflow__edge-${newNode[1].id}-${newNode[0].id}`
+            }
+            setEdges((edges) => edges.concat(conect))
+            
+        } else{
+            //Create new nodes and set in setNodes State
+            const newNode = {
+                id: uuidv4(),
+                type: "custom",
+                position,
+                data: {
+                    label: type.charAt(0).toUpperCase() + type.slice(1),
+                    style: getNodeStyle(type),
+                    transform: getTransform(type),
+                },
+            };
+
+            const iterationNode = [
+                {
+                    id: uuidv4(),
+                    type: "custom",
+                    position: {
+                        x: position.x + 300,
+                        y: position.y - 100
+                    },
+                    data: {
+                        label: "iteration",
+                        style: getNodeStyle("iteration"),
+                        transform: getTransform("iteration"),
+                    },
+                },
+                {
+                    id: uuidv4(),
+                    type: "custom",
+                    position:{
+                        x: position.x + 300,
+                        y: position.y + 100
+                    },
+                    data: {
+                        label: "iteration",
+                        style: getNodeStyle("iteration"),
+                        transform: getTransform("iteration"),
+                    },
+                }
+            ];
+
+
+            setNodes((nds) => nds.concat(newNode));
+            
+            for (let index = 0; index < iterationNode.length; index++) {
+                const element = iterationNode[index];
+                setNodes((nds) => nds.concat(element));
+                const conect = {
+                    source: element.id,
+                    sourceHandle: null,
+                    target: newNode.id,
+                    targetHandle: null,
+                    type: "step",
+                    id: `reactflow__edge-${element.id}-${newNode.id}`
+                }
+                setEdges((edges) => edges.concat(conect))
+            }
+        }
+
     };
 
+    console.log("edges",edges)
     // Create node DoubleClick function using this function Form Show in side bar and Set form Data.
     const onNodeDoubleClick = (event, node) => {
-        setEditingNode(node);
+        console.log("node",node)
+        setEditingNode({
+            ...node,
+            typeid: node.typeid,
+        });
         setPopoverData({
             name: node.data.label,
             color: node.data.style.background,
             height: node.data.style.height,
             width: node.data.style.width,
+            typeid: node.typeid,
         });
     };
 
@@ -124,12 +222,13 @@ const FlowEditor = () => {
                 n.id === editingNode.id
                     ? {
                         ...n,
+                        typeid: popoverData.typeid,
                         data: {
                             ...n.data,
                             //set new nodes Name and Style
                             label: popoverData.name,
                             style: {
-                                ...n.data.style,
+                                ...getNodeStyle(popoverData.typeid),
                                 background: popoverData.color,
                                 height: parseInt(popoverData.height),
                                 width: parseInt(popoverData.width),
@@ -160,7 +259,7 @@ const FlowEditor = () => {
                     {/* when we are double Click on node so editingNode set so form is Show Other wise hide */}
                     {editingNode && (
                         // Call the Edit form Component
-                        <Editnodes handleSubmit={(val) =>{handleSubmit(val)}} popoverData={popoverData} setPopoverData={(val) =>{setPopoverData(val)}}/>
+                        <Editnodes handleSubmit={(val) => { handleSubmit(val) }} popoverData={popoverData} setPopoverData={(val) => { setPopoverData(val) }} />
                     )}
                 </div>
                 <div style={{ width: '100%', height: '100vh' }}>

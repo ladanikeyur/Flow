@@ -42,6 +42,16 @@ export default function Editnodes(props) {
                     onChange={(e) => props.setPopoverData({ ...props.popoverData, width: e.target.value })}
                 />
             </div>
+            <div>
+                <select 
+                value={props.popoverData.typeid}
+                onChange={(e) => props.setPopoverData({ ...props.popoverData, typeid: e.target.value })}
+                >
+                    <option value="rectangle">Nodes</option>
+                    <option value="conditional">Condisnal</option>
+                    <option value="iteration">Iteretion</option>
+                </select>
+            </div>
             {/* using this submit button we are Edit Node data  */}
             <button className="button-style" onClick={props.handleSubmit}>
                 Submit
